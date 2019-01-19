@@ -7,8 +7,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,13 +24,13 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
  * directory.
  */
 public class Robot extends TimedRobot {
-  SpeedController frontLeft = new PWMVictorSPX(0);
-  SpeedController frontRight = new PWMVictorSPX(1);
-  SpeedController rearLeft = new PWMVictorSPX(2);
-  SpeedController rearRight = new PWMVictorSPX(3);
+  SpeedController frontLeft = new WPI_TalonSRX(1);
+  SpeedController frontRight = new WPI_TalonSRX(2);
+  SpeedController rearLeft = new WPI_TalonSRX(3);
+  SpeedController rearRight = new WPI_TalonSRX(4);
 
   private final MecanumDrive m_robotDrive
-      = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
+       = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
   private final XboxController controller = new XboxController(0);
   private final Timer m_timer = new Timer();
 
@@ -75,8 +76,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.driveCartesian(-controller.getX(Hand.kRight),
-      -controller.getY(Hand.kRight), -controller.getX(Hand.kLeft));
+    m_robotDrive.driveCartesian(controller.getX(Hand.kLeft),
+       -controller.getY(Hand.kRight), controller.getX(Hand.kRight));
   }
 
   /**
