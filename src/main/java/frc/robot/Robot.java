@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.CameraServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,17 +31,20 @@ public class Robot extends TimedRobot {
   SpeedController rearLeft = new WPI_TalonSRX(3);
   SpeedController rearRight = new WPI_TalonSRX(4);
 
-  private final MecanumDrive m_robotDrive
-       = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
+  private final MecanumDrive m_robotDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
   private final XboxController controller = new XboxController(0);
   private final Timer m_timer = new Timer();
 
+  private DoubleSolenoid lifting = new DoubleSolenoid(0, 1);
+  private DoubleSolenoid grabber = new DoubleSolenoid(2, 3);
+
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
+    CameraServer.getInstance().startAutomaticCapture();
   }
 
   /**
@@ -57,11 +62,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     // Drive for 2 seconds
-    /*if (m_timer.get() < 2.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
-    }*/
+    /*
+     * if (m_timer.get() < 2.0) { m_robotDrive.arcadeDrive(0.5, 0.0); // drive
+     * forwards half speed } else { m_robotDrive.stopMotor(); // stop robot }
+     */
   }
 
   /**
@@ -76,8 +80,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.driveCartesian(controller.getX(Hand.kLeft),
-       -controller.getY(Hand.kRight), controller.getX(Hand.kRight));
+    m_robotDrive.driveCartesian(controller.getX(Hand.kLeft), -controller.getY(Hand.kRight),
+        controller.getX(Hand.kRight));
+
+    if (controller.getAButtonPressed()) {
+      lifting.set(DoubleSolenoid.Value.kForward);
+    } else if (controller.getBButtonPressed()) {
+      lifting.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    if (controller.getXButtonPressed()) {
+      grabber.set(DoubleSolenoid.Value.kForward);
+    } else if (controller.getYButtonPressed()) {
+      grabber.set(DoubleSolenoid.Value.kReverse);
+    }
   }
 
   /**
